@@ -1,37 +1,16 @@
-﻿// **********************************************************************//
-//                                                                       //
-//     DeskMetrics NET - OperatingSystem/Hardware/IHardware.cs            //
-//     Copyright (c) 2010-2011 DeskMetrics Limited                       //
-//                                                                       //
-//     http://deskmetrics.com                                            //
-//     http://support.deskmetrics.com                                    //
-//                                                                       //
-//     support@deskmetrics.com                                           //
-//                                                                       //
-//     This code is provided under the DeskMetrics Modified BSD License  //
-//     A copy of this license has been distributed in a file called      //
-//     LICENSE with this source code.                                    //
-//                                                                       //
-// **********************************************************************//
-
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DeskMetrics.OperatingSystem.Hardware
+﻿namespace DeskMetrics.OperatingSystem.Hardware
 {
-    public abstract class IHardware
+    public interface IHardware
     {
-        public abstract string ProcessorName { get; set; }
-        public abstract int ProcessorArchicteture { get; set; }
-        public abstract int ProcessorCores { get; set; }
-        public abstract double MemoryTotal { get; set; }
-        public abstract double MemoryFree { get; set; }
-        public abstract long DiskTotal { get; set; }
-        public abstract long DiskFree { get; set; }
-        public abstract string ScreenResolution { get; set; }
-        public abstract string ProcessorBrand { get; set; }
-        public abstract double ProcessorFrequency { get; set; }
-
+        string ProcessorName { get; }
+        int ProcessorArchicteture { get; }
+        int ProcessorCores { get; }
+        double MemoryTotal { get; }
+        double MemoryFree { get; }
+        long DiskTotal { get; }
+        long DiskFree { get; }
+        string ScreenResolution { get; }
+        string ProcessorBrand { get; }
+        double ProcessorFrequency { get; }
     }
 }

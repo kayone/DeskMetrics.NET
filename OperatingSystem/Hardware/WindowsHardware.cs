@@ -23,143 +23,33 @@ using System.IO;
 
 namespace DeskMetrics.OperatingSystem.Hardware
 {
-	public class WindowsHardware:IHardware
-	{
+    public class WindowsHardware : IHardware
+    {
+        #region IHardware implementation
 
-		        /// <summary>
-        /// Field Processor Name
-        /// </summary>
-        private string _processorName;
-        /// <summary>
-        /// Field Processor Archicteture
-        /// </summary>
-        private int _processorArchicteture;
-        /// <summary>
-        /// Field Processor Cores
-        /// </summary>
-        private int _processorCore;
-        /// <summary>
-        /// Field Memory total
-        /// </summary>
-        private double _memoryTotal;
-        /// <summary>
-        /// Field Memory free
-        /// </summary>
-        private double _memoryFree;
-        /// <summary>
-        /// Field Disk space total
-        /// </summary>
-        private long _diskTotal;
-        /// <summary>
-        /// Field Disk free
-        /// </summary>
-        private long _diskFree;
-        /// <summary>
-        /// Field Screen Resolution
-        /// </summary>
-        private string _screenResolution;
-        /// <summary>
-        /// Field Processor Brand
-        /// </summary>
-        private string _processorBrand;
-        /// <summary>
-        /// Field Processor Frequency
-        /// </summary>
-        private double _processorFrequency;
-		
-		#region IHardware implementation
-		public override  string ProcessorName {
-			get {
-                return _processorName;
-			}
-			set {
-                _processorName = value;
-            }
-		}
+        public string ProcessorName { get; private set; }
 
-		public override  int ProcessorArchicteture {
-			get {
-                return _processorArchicteture;
-			}
-			set {
-                _processorArchicteture = value;
-			}
-		}
+        public int ProcessorArchicteture { get; private set; }
 
-		public override  int ProcessorCores {
-			get {
-                return _processorCore;
-			}
-			set {
-                _processorCore = value;
-			}
-		}
+        public int ProcessorCores { get; private set; }
 
-		public override double MemoryTotal {
-			get {
-                return _memoryTotal;
-			}
-			set {
-                _memoryTotal = value;
-			}
-		}
+        public double MemoryTotal { get; private set; }
 
-		public override double MemoryFree {
-			get {
-                return _memoryFree;
-			}
-			set {
-                _memoryFree = value;
-			}
-		}
+        public double MemoryFree { get; private set; }
 
-		public override long DiskTotal {
-			get {
-                return _diskTotal;
-			}
-			set {
-                _diskTotal = value;
-			}
-		}
+        public long DiskTotal { get; private set; }
 
-		public override long DiskFree {
-			get {
-                return _diskFree;
-			}
-			set {
-                _diskFree = value;
-			}
-		}
+        public long DiskFree { get; private set; }
 
-		public override string ScreenResolution {
-			get {
-                return _screenResolution;
-			}
-			set {
-                _screenResolution = value;
-			}
-		}
+        public string ScreenResolution { get; private set; }
 
-		public override string ProcessorBrand {
-			get {
-                return _processorBrand;
-			}
-			set {
-                _processorBrand = value;
-			}
-		}
+        public string ProcessorBrand { get; private set; }
 
-		public override double ProcessorFrequency {
-			get {
-                return _processorFrequency;
-			}
-			set {
-                _processorFrequency = value;
-			}
-		}
-		#endregion
-		
-		Dictionary<int, int> arch = new Dictionary<int, int>
+        public double ProcessorFrequency { get; private set; }
+
+        #endregion
+
+        readonly Dictionary<int, int> _arch = new Dictionary<int, int>
         {
             {0,32}, //x86
             {1,32}, //MIPS
@@ -171,7 +61,7 @@ namespace DeskMetrics.OperatingSystem.Hardware
 
         private Dictionary<int, int> Arch
         {
-            get { return arch; }
+            get { return _arch; }
         }
 
         public WindowsHardware()
@@ -181,8 +71,8 @@ namespace DeskMetrics.OperatingSystem.Hardware
             GetScreenResolution();
             GetDiskData();
         }
-		
-		void GetProcessorData()
+
+        void GetProcessorData()
         {
             try
             {
@@ -190,7 +80,7 @@ namespace DeskMetrics.OperatingSystem.Hardware
                 foreach (ManagementObject sysItem in searcher.Get())
                     GetProcessorDataFromManagementObject(sysItem);
             }
-            catch 
+            catch
             {
                 //Probably Unix
             }
@@ -268,7 +158,7 @@ namespace DeskMetrics.OperatingSystem.Hardware
         {
             try
             {
-                string valuename = sysItem["Name"].ToString();
+                string valuename = sysItem["EventName"].ToString();
 
                 if (valuename != "")
                 {
@@ -297,30 +187,30 @@ namespace DeskMetrics.OperatingSystem.Hardware
                 ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from CIM_OperatingSystem");
                 foreach (ManagementObject sysItem in searcher.Get())
                 {
-                    string value  = sysItem["FreePhysicalMemory"].ToString();
+                    string value = sysItem["FreePhysicalMemory"].ToString();
                     string value2 = sysItem["TotalVisibleMemorySize"].ToString();
-                    MemoryFree    = Convert.ToDouble(value) * 1024;
-                    MemoryTotal   = Convert.ToDouble(value2) * 1024;
+                    MemoryFree = Convert.ToDouble(value) * 1024;
+                    MemoryTotal = Convert.ToDouble(value2) * 1024;
                 }
 
             }
             catch
             {
-				try
-				{
-					string[] free = IOperatingSystem.GetCommandExecutionOutput("free","-m").Split('\n');
-					string memoryinfo = free[1];
-					Regex regex = new Regex(@"\d+");
-					MatchCollection matches = regex.Matches(memoryinfo);
-					double mega = 1024*1024;
-	                MemoryFree = Int32.Parse(matches[2].ToString())*mega;
-	                MemoryTotal = Int32.Parse(matches[0].ToString())*mega;
-				}
-				catch
-				{
-					MemoryFree = 0;
-					MemoryTotal = 0;
-				}
+                try
+                {
+                    string[] free = IOperatingSystem.GetCommandExecutionOutput("free", "-m").Split('\n');
+                    string memoryinfo = free[1];
+                    Regex regex = new Regex(@"\d+");
+                    MatchCollection matches = regex.Matches(memoryinfo);
+                    double mega = 1024 * 1024;
+                    MemoryFree = Int32.Parse(matches[2].ToString()) * mega;
+                    MemoryTotal = Int32.Parse(matches[0].ToString()) * mega;
+                }
+                catch
+                {
+                    MemoryFree = 0;
+                    MemoryTotal = 0;
+                }
             }
 
         }
@@ -340,7 +230,7 @@ namespace DeskMetrics.OperatingSystem.Hardware
                     {
                         DriveInfo _drive = new DriveInfo(item);
                         DiskTotal = _drive.TotalSize;
-                        DiskFree  = _drive.TotalFreeSpace;
+                        DiskFree = _drive.TotalFreeSpace;
                     }
                 }
             }
@@ -365,8 +255,8 @@ namespace DeskMetrics.OperatingSystem.Hardware
             {
                 ScreenResolution = "null";
             }
-        }    
+        }
 
-	}
+    }
 }
 

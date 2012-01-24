@@ -15,6 +15,8 @@
 // **********************************************************************//
 
 using System;
+using System.Collections.Generic;
+using DeskMetrics.DataPoints;
 using DeskMetrics.Json;
 
 namespace DeskMetrics.Watcher
@@ -28,7 +30,7 @@ namespace DeskMetrics.Watcher
 
         internal bool Started { get; private set; }
 
-        internal string ApplicationId { get; set; }
+        internal string ApplicationId { get; private set; }
 
         internal Version ApplicationVersion { get; set; }
 
@@ -53,16 +55,10 @@ namespace DeskMetrics.Watcher
         /// <summary>
         /// Starts the application tracking.
         /// </summary>
-        /// <param name="appId">
-        /// Your app ID. You can get it at http://analytics.deskmetrics.com/
-        /// </param>
-        /// <param name="appVersion">
-        /// Your app version.
-        /// </param>
         public void Start()
         {
             Started = true;
-            var json = new StartAppJson(this);
+            var json = new StartAppDataPoint();
             PostToServer(json);
         }
 
@@ -71,41 +67,48 @@ namespace DeskMetrics.Watcher
         /// </summary>
         public void Stop()
         {
-            PostToServer(new StopAppJson());
+            PostToServer(new StopAppDataPoint());
             Started = false;
         }
 
         /// <summary>
         /// Register an event occurrence
         /// </summary>
-        /// <param name="EventCategory">EventCategory Category</param>
-        /// <param name="eventName">EventCategory Name</param>
-        public void TrackEvent(string EventCategory, string EventName)
+        /// <param name="eventCategory">EventCategory Category</param>
+        /// <param name="eventName">EventCategory eventName</param>
+        public void TrackEvent(string eventCategory, string eventName)
         {
-            var json = new EventJson(EventCategory, EventName, GetFlowNumber());
+            var json = new EventDataPoint { EventCategory = eventCategory, EventName = eventName };
             PostToServer(json);
         }
 
         /// <summary>
         /// Tracks an event related to time and intervals
         /// </summary>
-        /// <param name="EventCategory">
+        /// <param name="eventCategory">
         /// The event category
         /// </param>
-        /// <param name="EventName">
+        /// <param name="eventName">
         /// The event name
         /// </param>
-        /// <param name="EventTime">
+        /// <param name="eventTime">
         /// The event duration 
         /// </param>
-        /// <param name="Completed">
+        /// <param name="completed">
         /// True if the event was completed.
         /// </param>
-        public void TrackEventPeriod(string EventCategory, string EventName, int EventTime, bool Completed)
+        public void TrackEventPeriod(string eventCategory, string eventName, TimeSpan eventTime, bool completed)
         {
             if (Started)
             {
-                var json = new EventPeriodJson(EventCategory, EventName, GetFlowNumber(), EventTime, Completed);
+                var json = new EventPeriodDataPoint
+                               {
+                                   EventCategory = eventCategory,
+                                   EventName = eventName,
+                                   EventDuration = eventTime.TotalSeconds,
+                                   EventCompleted = completed
+                               };
+
                 PostToServer(json);
             }
         }
@@ -119,35 +122,29 @@ namespace DeskMetrics.Watcher
         /// <param name="appid">
         /// Your app ID. You can get it at http://analytics.deskmetrics.com/
         /// </param>
-        public void TrackInstall(string version, string appid)
+        public void TrackInstall()
         {
-            var json = new InstallJson(version);
+            var json = new InstallDataPoint();
             PostToServer(json);
         }
         /// <summary>
         /// Tracks an uninstall
         /// </summary>
-        /// <param name="version">
-        /// Your app version
-        /// </param>
-        /// <param name="appid">
-        /// Your app ID. You can get it at http://analytics.deskmetrics.com/
-        /// </param>
-        public void TrackUninstall(string version, string appid)
+        public void TrackUninstall()
         {
-            var json = new UninstallJson(version);
+            var json = new UninstallDataPoint();
             PostToServer(json);
         }
 
         /// <summary>
         /// Tracks an exception
         /// </summary>
-        /// <param name="ApplicationException">
+        /// <param name="exception">
         /// The exception object to be tracked
         /// </param>
-        public void TrackException(Exception ApplicationException)
+        public void TrackException(Exception exception)
         {
-            var json = new ExceptionJson(ApplicationException, GetFlowNumber());
+            var json = new ExceptionDataPoint { Exception = exception };
             PostToServer(json);
         }
 
@@ -156,56 +153,62 @@ namespace DeskMetrics.Watcher
         /// <summary>
         /// Tracks an event with custom value
         /// </summary>
-        /// <param name="EventCategory">
+        /// <param name="eventCategory">
         /// The event category
         /// </param>
-        /// <param name="EventName">
+        /// <param name="eventName">
         /// The event name
         /// </param>
-        /// <param name="EventValue">
+        /// <param name="eventValue">
         /// The custom value
         /// </param>
-        public void TrackEventValue(string EventCategory, string EventName, string EventValue)
+        public void TrackEventValue(string eventCategory, string eventName, string eventValue)
         {
-            var json = new EventValueJson(EventCategory, EventName, EventValue, GetFlowNumber());
+            var json = new EventValueDataPoint { EventCategory = eventCategory, EventName = eventName, EventValue = eventValue };
             PostToServer(json);
         }
 
         /// <summary>
         /// Tracks custom data
         /// </summary>
-        /// <param name="CustomDataName">
+        /// <param name="key">
         /// The custom data name
         /// </param>
-        /// <param name="CustomDataValue">
+        /// <param name="value">
         /// The custom data value
         /// </param>
-        public void TrackCustomData(string CustomDataName, string CustomDataValue)
+        public void TrackCustomData(string key, string value)
         {
-            var json = new CustomDataJson(CustomDataName, CustomDataValue, GetFlowNumber());
+            var json = new CustomDataDataPoint { CustomDataKey = key, CustomDataValue = value };
             PostToServer(json);
         }
 
         /// <summary>
         /// Tracks a log
         /// </summary>
-        /// <param name="Message">
+        /// <param name="message">
         /// The log message
         /// </param>
-        public void TrackLog(string Message)
+        public void TrackLog(string message)
         {
-            var json = new LogJson(Message, GetFlowNumber());
+            var json = new LogDataPoint { LogMessage = message };
             PostToServer(json);
         }
 
-        private void PostToServer(BaseJson json)
+        private void PostToServer(BaseDataPoint dataPoint)
         {
             lock (_objectLock)
             {
-                if (!Started)
-                    throw new InvalidOperationException("The application is not started");
+                //if (!Started)
+                //throw new InvalidOperationException("The application is not started");
 
-                _services.PostData(Settings.ApiEndpoint, json.GetJson(SessionId,UserId));
+                //dataPoint.Flow = GetFlowNumber();
+                dataPoint.SessionId = SessionId;
+                dataPoint.UserId = UserId;
+                dataPoint.Version = ApplicationVersion.ToString();
+
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(dataPoint);
+                _services.PostData(Settings.ApiEndpoint, json);
             }
         }
 

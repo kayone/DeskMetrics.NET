@@ -10,23 +10,24 @@ namespace DeskMetricsConsole
             var watcher = new Client(Guid.NewGuid().ToString(), "4ea8d347a14ad71442000002",new Version(0, 1) );
             Console.Write("Starting...");
             watcher.Start();
+            watcher.TrackInstall();
             Console.WriteLine("[ok]");
 
             Console.Write("Adding event...");
-            watcher.TrackEvent("DeskMetricsConsole", "InitialEvent");
+            watcher.TrackEvent("TrackEvent", "Sample event name");
             Console.WriteLine("[ok]");
 
             Console.Write("Adding event value...");
-            watcher.TrackEventValue("DeskMetricsConsole", "EventValue", "Aha!");
+            watcher.TrackEventValue("TrackEventValue", "KEventName", "KEventValue");
             Console.WriteLine("[ok]");
 
             Console.Write("Adding event timed...");
-            watcher.TrackEventPeriod("DeskMetricsConsole", "EventValue", 100, true);
-            watcher.TrackEventPeriod("DeskMetricsConsole", "EventValue", 30, false);
+            watcher.TrackEventPeriod("TrackEventPeriod", "KEventName", TimeSpan.FromSeconds(10), true);
+            watcher.TrackEventPeriod("TrackEventPeriod", "KEventName", TimeSpan.FromSeconds(1), false);
             Console.WriteLine("[ok]");
 
             Console.Write("Adding custom data...");
-            watcher.TrackCustomData("DeskMetricsConsole", "CustomData");
+            watcher.TrackCustomData("TrackCustomData", "KCustomData");
             Console.WriteLine("[ok]");
 
             Console.Write("Adding log");

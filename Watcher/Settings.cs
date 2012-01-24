@@ -22,10 +22,9 @@ namespace DeskMetrics.Watcher
     {
         public const string UserAgent = "DeskMetricsNET";
         public const string DefaultServer = "api.deskmetrics.com";
-        public const string NullStr = "null";
         public const string ApiEndpoint = "/sendData";
 
-        public const int DefaultPort = 443;
+        public const int DefaultPort = 80;
         public const int Timeout = 25000; // 20 seconds
 
         public static readonly Dictionary<string, string> ErrorCodes = new Dictionary<string, string> 

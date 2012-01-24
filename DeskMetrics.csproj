@@ -46,6 +46,9 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>packages\Newtonsoft.Json.4.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -54,7 +57,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Watcher\EventType.cs" />
     <Compile Include="Watcher\Services.cs" />
     <Compile Include="Watcher\Client.cs" />
     <Compile Include="Watcher\Settings.cs" />
@@ -62,20 +64,17 @@
     <Compile Include="OperatingSystem\OperatingSystemFactory.cs" />
     <Compile Include="OperatingSystem\UnixOperatingSystem.cs" />
     <Compile Include="OperatingSystem\WindowsOperatingSystem.cs" />
-    <Compile Include="Json\Json.cs" />
-    <Compile Include="Json\JsonBuilder.cs" />
-    <Compile Include="Json\BaseJson.cs" />
-    <Compile Include="Json\InstallJson.cs" />
-    <Compile Include="Json\UninstallJson.cs" />
-    <Compile Include="Json\StopAppJson.cs" />
-    <Compile Include="Json\EventJson.cs" />
-    <Compile Include="Json\EventValueJson.cs" />
-    <Compile Include="Json\LogJson.cs" />
-    <Compile Include="Json\CustomDataJson.cs" />
-    <Compile Include="Json\CustomDataR.cs" />
-    <Compile Include="Json\ExceptionJson.cs" />
-    <Compile Include="Json\StartAppJson.cs" />
-    <Compile Include="Json\EventPeriodJson.cs" />
+    <Compile Include="DataPoints\BaseDataPoint.cs" />
+    <Compile Include="DataPoints\InstallDataPoint.cs" />
+    <Compile Include="DataPoints\UninstallDataPoint.cs" />
+    <Compile Include="DataPoints\StopAppDataPoint.cs" />
+    <Compile Include="DataPoints\EventDataPoint.cs" />
+    <Compile Include="DataPoints\EventValueDataPoint.cs" />
+    <Compile Include="DataPoints\LogDataPoint.cs" />
+    <Compile Include="DataPoints\CustomDataDataPoint.cs" />
+    <Compile Include="DataPoints\ExceptionDataPoint.cs" />
+    <Compile Include="DataPoints\StartAppDataPoint.cs" />
+    <Compile Include="DataPoints\EventPeriodDataPoint.cs" />
     <Compile Include="OperatingSystem\IOperatingSystem.cs" />
     <Compile Include="OperatingSystem\Hardware\IHardware.cs" />
     <Compile Include="OperatingSystem\Hardware\WindowsHardware.cs" />
@@ -91,5 +90,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>

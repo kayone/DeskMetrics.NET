@@ -124,18 +124,5 @@ namespace DeskMetrics.Watcher
                 return "";
             }
         }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="Log">json message</param>
-        internal void SendData(string json)
-        {
-            lock (ObjectLock)
-            {
-                if (_client.Started)
-                    if (!string.IsNullOrEmpty(_client.ApplicationId) && (_client.Enabled == true))
-                        PostData(Settings.ApiEndpoint, json);
-            }
-        }
     }
 }
