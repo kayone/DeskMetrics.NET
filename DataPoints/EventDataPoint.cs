@@ -1,7 +1,6 @@
-using DeskMetrics.DataPoints;
 using Newtonsoft.Json;
 
-namespace DeskMetrics.Json
+namespace DeskMetrics.DataPoints
 {
 	public class EventDataPoint : BaseDataPoint
     {

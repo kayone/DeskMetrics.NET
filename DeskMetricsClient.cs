@@ -1,6 +1,5 @@
 ﻿using System;
 using DeskMetrics.DataPoints;
-using DeskMetrics.Json;
 
 namespace DeskMetrics
 {

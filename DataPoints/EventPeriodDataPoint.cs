@@ -1,4 +1,3 @@
-using DeskMetrics.Json;
 using Newtonsoft.Json;
 
 namespace DeskMetrics.DataPoints
