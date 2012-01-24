@@ -7,7 +7,7 @@ namespace DeskMetricsConsole
     {
         public static void Main(string[] args)
         {
-            var watcher = new Client(Guid.NewGuid().ToString(), "4ea8d347a14ad71442000002",new Version(0, 1) );
+            var watcher = new DeskMetricsClient(Guid.NewGuid().ToString(), "4ea8d347a14ad71442000002",new Version(0, 1) );
             Console.Write("Starting...");
             watcher.Start();
             watcher.TrackInstall();

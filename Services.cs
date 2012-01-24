@@ -28,14 +28,14 @@ namespace DeskMetrics
 
         public int PostTimeOut { get; set; }
 
-        private readonly Client _client;
+        private readonly DeskMetricsClient _deskMetricsClient;
 
-        internal Services(Client client)
+        internal Services(DeskMetricsClient deskMetricsClient)
         {
             PostTimeOut = Timeout;
             PostServer = DefaultServer;
             PostPort = DefaultPort;
-            _client = client;
+            _deskMetricsClient = deskMetricsClient;
         }
 
         private readonly object _objectLock = new Object();
@@ -54,11 +54,11 @@ namespace DeskMetrics
                             return true;
                         };
 
-                    url = "https://" + _client.ApplicationId + DefaultServer;
+                    url = "https://" + _deskMetricsClient.ApplicationId + DefaultServer;
                 }
                 else
                 {
-                    url = "http://" + _client.ApplicationId + DefaultServer;
+                    url = "http://" + _deskMetricsClient.ApplicationId + DefaultServer;
                 }
 
                 var request = (HttpWebRequest)WebRequest.Create(url);

@@ -4,26 +4,22 @@ using DeskMetrics.Json;
 
 namespace DeskMetrics
 {
-    public class Client : IDisposable
+    public class DeskMetricsClient : IDisposable
     {
         private readonly Object _objectLock = new Object();
-        private string SessionId { get; set; }
+        
         private int _flowglobalnumber;
         private readonly Services _services;
 
-        internal bool Started { get; private set; }
-
-        internal string ApplicationId { get; private set; }
-
-        internal Version ApplicationVersion { get; set; }
-
-        internal string Error { get; set; }
-
+        public  bool Started { get; private set; }
+        public string SessionId { get; set; }
+        public string ApplicationId { get; private set; }
+        public Version ApplicationVersion { get; set; }
+        public string Error { get; set; }
         public bool Enabled { get; set; }
-
         public string UserId { get; private set; }
 
-        public Client(string userId, string appId, Version appVersion)
+        public DeskMetricsClient(string userId, string appId, Version appVersion)
         {
             ApplicationId = appId;
             ApplicationVersion = appVersion;
@@ -98,16 +94,11 @@ namespace DeskMetrics
         /// <summary>
         /// Tracks an installation
         /// </summary>
-        /// <param name="version">
-        /// Your app version
-        /// </param>
-        /// <param name="appid">
-        /// Your app ID. You can get it at http://analytics.deskmetrics.com/
-        /// </param>
         public void TrackInstall()
         {
             Post<InstallDataPoint>();
         }
+
         /// <summary>
         /// Tracks an uninstall
         /// </summary>
@@ -185,22 +176,13 @@ namespace DeskMetrics
                 if (!Started)
                     throw new InvalidOperationException("The application is not started");
                 
-                dataPoint.Flow =  _flowglobalnumber + 1;
+                dataPoint.Flow = _flowglobalnumber++;
                 dataPoint.SessionId = SessionId;
                 dataPoint.UserId = UserId;
                 dataPoint.Version = ApplicationVersion.ToString();
 
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(dataPoint);
                 _services.PostData(json);
-            }
-        }
-
-        private int GetFlowNumber()
-        {
-            lock (_objectLock)
-            {
-               
-                return _flowglobalnumber;
             }
         }
 
