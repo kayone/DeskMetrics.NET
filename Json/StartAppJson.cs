@@ -36,7 +36,7 @@ namespace DeskMetrics.Json
             var json = base.GetJsonHashTable();
 			
             json.Add("aver",Watcher.ApplicationVersion);
-            json.Add("ID", Watcher.UserGUID);
+            json.Add("ID", Watcher.UserId);
             json.Add("osv", GetOsInfo.Version);
             json.Add("ossp", GetOsInfo.ServicePack);
             json.Add("osar", GetOsInfo.Architecture);

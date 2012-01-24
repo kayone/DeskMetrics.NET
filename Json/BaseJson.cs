@@ -18,28 +18,15 @@ using System;
 using System.Collections;
 namespace DeskMetrics.Json
 {
-	public abstract class BaseJson
+    public abstract class BaseJson
     {
         protected string Type;
-        private static string _session;
-        protected static string Session
-        {
-            get
-            {
-                return _session;
-            }
-            set
-            {
-            //    //ensure that Session will be filled only once
-            //    if (string.IsNullOrEmpty(_session) && !string.IsNullOrEmpty(value))
-                  _session = value;
-            }
-        }
+        protected static string Session { get; set; }
 
-        protected int TimeStamp;
-        protected Hashtable json;
+        private readonly int _timeStamp;
+        private readonly Hashtable _jsonHashTable;
 
-        public BaseJson(string type,string session)
+        protected BaseJson(string type, string session)
         {
             Type = type;
 
@@ -48,16 +35,21 @@ namespace DeskMetrics.Json
             else
                 Session = session;
 
-            TimeStamp = Util.GetTimeStamp();
-            json = new Hashtable();
+            _timeStamp = Util.GetTimeStamp();
+            _jsonHashTable = new Hashtable();
         }
 
         public virtual Hashtable GetJsonHashTable()
         {
-            json.Add("tp", Type);
-            json.Add("ss", Session);
-            json.Add("ts", TimeStamp);
-            return json;
+            _jsonHashTable.Add("tp", Type);
+            _jsonHashTable.Add("ss", Session);
+            _jsonHashTable.Add("ts", _timeStamp);
+            return _jsonHashTable;
+        }
+
+        public string GetJson()
+        {
+            return JsonBuilder.GetJsonFromHashTable(GetJsonHashTable());
         }
     }
 }

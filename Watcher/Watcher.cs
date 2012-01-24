@@ -16,159 +16,33 @@
 
 using System;
 using System.Reflection;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-
 using System.Net;
-using System.Net.Security;
-using System.Threading;
-using System.Security.Cryptography.X509Certificates;
 using DeskMetrics.Json;
-
-// delete if you arent using debug.writeline()
-using System.Diagnostics;
 
 namespace DeskMetrics
 {
     public class Watcher : IDisposable
     {
-        #region attributes
-        Thread StopThread;
-        /// <summary>
-        /// Thread Lock
-        /// </summary>
-        private System.Object ObjectLock = new System.Object();
-
-        /// <summary>
-        /// Field User GUID
-        /// </summary>
-        private object _userGUID;
-
-        internal object UserGUID
-        {
-            get
-            {
-                if (_userGUID == null)
-                    _userGUID = User.GetID();
-                return _userGUID;
-            }
-        }
-        /// <summary>
-        /// Field Session Id
-        /// </summary>
-        private string _sessionGUID;
-
-        internal object SessionGUID
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_sessionGUID))
-                {
-                    _sessionGUID = User.GetSessionID();
-                }
-                return _sessionGUID;
-            }
-        }
-        /// <summary>
-        /// Field Json
-        /// </summary>
-        private List<string> _json;
-        /// <summary>
-        /// Field Application Id
-        /// </summary>
-        private string _applicationId;
-        /// <summary>
-        /// Field Error Message
-        /// </summary>
-        private string _error;
-
-        /// <summary>
-        /// Field ApplicationVersion
-        /// </summary>
-        private string _applicationVersion;
-        /// <summary>
-        /// Field Component Name
-        /// </summary>
+        private readonly Object _objectLock = new System.Object();
+        private string SessionGUID { get; set; }
         private string _componentName;
-        /// <summary>
-        /// Field Component Version
-        /// </summary>
         private string _componentVersion;
-
         private int _flowglobalnumber = 0;
+        private readonly Services _services;
+        private readonly CurrentUser _user;
 
-        private bool _started = false;
 
-        internal bool Started
-        {
-            get { return _started; }
-        }
+        internal bool Started { get; private set; }
 
-        private bool _enabled = true;
+        internal string ApplicationId { get; set; }
 
-        internal string ApplicationId
-        {
-            get
-            {
-                return _applicationId;
-            }
-            set
-            {
-                _applicationId = value;
-                Cache.ApplicationId = ApplicationId;
-            }
-        }
+        internal Version ApplicationVersion { get; set; }
 
-        internal string ApplicationVersion
-        {
-            get
-            {
-                return _applicationVersion;
-            }
-            set
-            {
-                _applicationVersion = value;
-            }
-        }
+        internal string Error { get; set; }
 
-        internal List<string> JSON
-        {
-            get
-            {
-                if (_json == null)
-                    _json = new List<string>();
-                return _json;
-            }
-            set
-            {
-                _json = value;
-            }
-        }
-
-        internal string Error
-        {
-            get
-            {
-                return _error;
-            }
-            set
-            {
-                _error = value;
-            }
-        }
-
-        public bool Enabled
-        {
-            get
-            {
-                return _enabled;
-            }
-            set
-            {
-                _enabled = value;
-            }
-        }
+        public bool Enabled { get; set; }
+        
+        public string UserId { get; private set; }
 
         public string ComponentName
         {
@@ -179,7 +53,6 @@ namespace DeskMetrics
                 _componentName = ((AssemblyTitleAttribute)attrs[0]).Title;
                 return _componentName;
             }
-
         }
 
         public string ComponentVersion
@@ -192,111 +65,52 @@ namespace DeskMetrics
 
         }
 
-        public string JSONData
+        public Watcher(string userId)
         {
-            get
-            {
-                return _json.ToString();
-            }
-
+            UserId = userId;
+            Enabled = true;
+            Started = false;
+            _services = new Services(this);
+            _user = new CurrentUser();
         }
-
-        private Services _services;
-
-        public Services Services
-        {
-            get
-            {
-                if (_services == null)
-                    _services = new Services(this);
-                return _services;
-            }
-            private set { _services = value; }
-        }
-
-
-
-        private Cache _cache;
-        internal Cache Cache
-        {
-            get
-            {
-                if (_cache == null)
-                    _cache = new Cache();
-                return _cache;
-            }
-        }
-
-        private CurrentUser _user;
-
-        internal CurrentUser User
-        {
-            get
-            {
-                if (_user == null)
-                    _user = new CurrentUser();
-                return _user;
-            }
-        }
-
-
+        
         internal void CheckApplicationCorrectness()
         {
             if (string.IsNullOrEmpty(ApplicationId.Trim()))
                 throw new Exception("You must specify an non-empty application ID");
-            else if (!Enabled)
+            
+            if (!Enabled)
                 throw new InvalidOperationException("The application is stopped or not enabled");
         }
 
-        #endregion
         /// <summary>
         /// Starts the application tracking.
         /// </summary>
-        /// <param name="ApplicationId">
+        /// <param name="appId">
         /// Your app ID. You can get it at http://analytics.deskmetrics.com/
         /// </param>
-        /// <param name="ApplicationVersion">
+        /// <param name="appVersion">
         /// Your app version.
         /// </param>
-        public void Start(string ApplicationId, string ApplicationVersion)
+        public void Start(string appId, Version appVersion)
         {
-            this.ApplicationId = ApplicationId;
-            this.ApplicationVersion = ApplicationVersion;
-
-            _sessionGUID = null;
-            Debug.WriteLine("ss: " + _sessionGUID);
+            SessionGUID = _user.GetSessionID();
+            this.ApplicationId = appId;
+            this.ApplicationVersion = appVersion;
 
             CheckApplicationCorrectness();
 
-            lock (ObjectLock)
+            lock (_objectLock)
                 if (Enabled)
                     StartAppJson();
-            _started = true;
+            Started = true;
             //SendDataAsync();
         }
 
         private void StartAppJson()
         {
             var startjson = new StartAppJson(this);
-            JSON.Add(JsonBuilder.GetJsonFromHashTable(startjson.GetJsonHashTable()));
-        }
-
-        private void TryInitializeStop()
-        {
-            if (StopThread == null)
-                StopThread = new Thread(_StopThreadFunc);
-        }
-
-        private bool IsStopThreadInitialized()
-        {
-            return StopThread != null && !StopThread.IsAlive;
-        }
-
-        private void RunStopThread()
-        {
-            StopThread = new Thread(_StopThreadFunc);
-            StopThread.Name = "StopSender";
-            StopThread.Start();
+            PostToServer(startjson.GetJson());
         }
 
         /// <summary>
@@ -305,46 +119,18 @@ namespace DeskMetrics
         public void Stop()
         {
             CheckApplicationCorrectness();
-            lock (ObjectLock)
+            lock (_objectLock)
             {
-                TryInitializeStop();
-                if (IsStopThreadInitialized())
-                    RunStopThread();
+                PostToServer(new StopAppJson().GetJson());
             }
         }
 
-        private string GenerateStopJson()
+        private void PostToServer(string message)
         {
-            var json = new StopAppJson();
-            JSON.Add(JsonBuilder.GetJsonFromHashTable(json.GetJsonHashTable()));
-            string SingleJSON = JsonBuilder.GetJsonFromList(JSON);
-            return SingleJSON;
-        }
-
-        private string AppendCacheDataToJson(string json)
-        {
-            string CacheData = Cache.GetCacheData();
-            if (!string.IsNullOrEmpty(CacheData))
-                json = json + "," + CacheData;
-            return json;
-        }
-
-        private void _StopThreadFunc()
-        {
-            lock (ObjectLock)
+            lock (_objectLock)
             {
                 CheckApplicationCorrectness();
-                JSON.Add(AppendCacheDataToJson(GenerateStopJson()));
-                try
-                {
-                    Services.PostData(Settings.ApiEndpoint, JsonBuilder.GetJsonFromList(JSON));
-                    JSON.Clear();
-                    Cache.Delete();
-                }
-                catch (Exception)
-                {
-                    Cache.Save(JSON);
-                }
+                _services.PostData(Settings.ApiEndpoint, message);
             }
         }
 
@@ -355,13 +141,13 @@ namespace DeskMetrics
         /// <param name="eventName">EventCategory Name</param>
         public void TrackEvent(string EventCategory, string EventName)
         {
-            lock (ObjectLock)
+            lock (_objectLock)
             {
                 if (Started)
                 {
                     CheckApplicationCorrectness();
                     var json = new EventJson(EventCategory, EventName, GetFlowNumber());
-                    JSON.Add(JsonBuilder.GetJsonFromHashTable(json.GetJsonHashTable()));
+                    PostToServer(json.GetJson());
                 }
             }
         }
@@ -383,13 +169,13 @@ namespace DeskMetrics
         /// </param>
         public void TrackEventPeriod(string EventCategory, string EventName, int EventTime, bool Completed)
         {
-            lock (ObjectLock)
+            lock (_objectLock)
             {
                 if (Started)
                 {
                     CheckApplicationCorrectness();
                     var json = new EventPeriodJson(EventCategory, EventName, GetFlowNumber(), EventTime, Completed);
-                    JSON.Add(JsonBuilder.GetJsonFromHashTable(json.GetJsonHashTable()));
+                    PostToServer(json.GetJson());
                 }
             }
         }
@@ -405,14 +191,14 @@ namespace DeskMetrics
         /// </param>
         public void TrackInstall(string version, string appid)
         {
-            lock (ObjectLock)
+            lock (_objectLock)
             {
                 var json = new InstallJson(version);
                 ApplicationId = appid;
-                _started = true;
+                Started = true;
                 try
                 {
-                    Services.SendData(JsonBuilder.GetJsonFromHashTable(json.GetJsonHashTable()));
+                    _services.SendData(JsonBuilder.GetJsonFromHashTable(json.GetJsonHashTable()));
                 }
                 catch (WebException)
                 {
@@ -431,14 +217,14 @@ namespace DeskMetrics
         /// </param>
         public void TrackUninstall(string version, string appid)
         {
-            lock (ObjectLock)
+            lock (_objectLock)
             {
                 var json = new UninstallJson(version);
                 ApplicationId = appid;
-                _started = true;
+                Started = true;
                 try
                 {
-                    Services.SendData(JsonBuilder.GetJsonFromHashTable(json.GetJsonHashTable()));
+                    _services.SendData(JsonBuilder.GetJsonFromHashTable(json.GetJsonHashTable()));
                 }
                 catch (WebException)
                 {
@@ -455,13 +241,13 @@ namespace DeskMetrics
         /// </param>
         public void TrackException(Exception ApplicationException)
         {
-            lock (ObjectLock)
+            lock (_objectLock)
             {
                 if (Started && ApplicationException != null)
                 {
                     CheckApplicationCorrectness();
                     var json = new ExceptionJson(ApplicationException, GetFlowNumber());
-                    JSON.Add(JsonBuilder.GetJsonFromHashTable(json.GetJsonHashTable()));
+                    PostToServer(json.GetJson());
                 }
             }
         }
@@ -476,13 +262,13 @@ namespace DeskMetrics
             }
             catch (Exception e)
             {
-                _error = e.Message;
+                Error = e.Message;
             }
         }
 
         protected int GetFlowNumber()
         {
-            lock (ObjectLock)
+            lock (_objectLock)
             {
                 try
                 {
@@ -510,13 +296,13 @@ namespace DeskMetrics
         /// </param>
         public void TrackEventValue(string EventCategory, string EventName, string EventValue)
         {
-            lock (ObjectLock)
+            lock (_objectLock)
             {
                 if (Started)
                 {
                     CheckApplicationCorrectness();
                     var json = new EventValueJson(EventCategory, EventName, EventValue, GetFlowNumber());
-                    JSON.Add(JsonBuilder.GetJsonFromHashTable(json.GetJsonHashTable()));
+                    PostToServer(json.GetJson());
                 }
             }
         }
@@ -532,13 +318,13 @@ namespace DeskMetrics
         /// </param>
         public void TrackCustomData(string CustomDataName, string CustomDataValue)
         {
-            lock (ObjectLock)
+            lock (_objectLock)
             {
                 if (Started)
                 {
                     CheckApplicationCorrectness();
                     var json = new CustomDataJson(CustomDataName, CustomDataValue, GetFlowNumber());
-                    JSON.Add(JsonBuilder.GetJsonFromHashTable(json.GetJsonHashTable()));
+                    PostToServer(json.GetJson());
                 }
             }
         }
@@ -551,13 +337,13 @@ namespace DeskMetrics
         /// </param>
         public void TrackLog(string Message)
         {
-            lock (ObjectLock)
+            lock (_objectLock)
             {
                 if (Started)
                 {
                     CheckApplicationCorrectness();
                     var json = new LogJson(Message, GetFlowNumber());
-                    JSON.Add(JsonBuilder.GetJsonFromHashTable(json.GetJsonHashTable()));
+                    PostToServer(json.GetJson());
                 }
             }
         }
@@ -583,10 +369,10 @@ namespace DeskMetrics
             }
             catch (Exception)
             {
-                lock (ObjectLock)
+                lock (_objectLock)
                 {
                     var json = new CustomDataRJson(CustomDataName, CustomDataValue, GetFlowNumber(), ApplicationId, ApplicationVersion);
-                    JSON.Add(JsonBuilder.GetJsonFromHashTable(json.GetJsonHashTable()));
+                    PostToServer(json.GetJson());
                     return false;
                 }
             }
@@ -607,7 +393,7 @@ namespace DeskMetrics
         /// </returns>
         public void TrackCustomDataR(string CustomDataName, string CustomDataValue)
         {
-            lock (ObjectLock)
+            lock (_objectLock)
             {
                 if (Started)
                 {
@@ -615,27 +401,12 @@ namespace DeskMetrics
                     try
                     {
                         var json = new CustomDataRJson(CustomDataName, CustomDataValue, GetFlowNumber(), ApplicationId, ApplicationVersion);
-                        Services.PostData(Settings.ApiEndpoint, JsonBuilder.GetJsonFromHashTable(json.GetJsonHashTable()));
+                        _services.PostData(Settings.ApiEndpoint, JsonBuilder.GetJsonFromHashTable(json.GetJsonHashTable()));
                     }
                     catch (WebException)
                     {
                         // only hide unhandled exception due no internet connection
                     }
-                }
-            }
-        }
-
-        public void SendDataAsync()
-        {
-            lock (ObjectLock)
-            {
-                try
-                {
-                    Services.SendDataAsync(JsonBuilder.GetJsonFromList(JSON));                    
-                }
-                catch (WebException)
-                {
-                    // only hide unhandled exception due no internet connection
                 }
             }
         }

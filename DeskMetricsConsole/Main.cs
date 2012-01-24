@@ -14,7 +14,7 @@ namespace DeskMetricsConsole
 			}
 			
 			
-			var watcher = new Watcher();
+			var watcher = new Watcher("");
 			if (args[0] == "Install")
 			{
 				watcher.TrackInstall(args[2],args[1]);

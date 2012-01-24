@@ -21,19 +21,19 @@ namespace DeskMetrics.Json
 {
 	public class CustomDataRJson : CustomDataJson
     {
-        protected string ID;
-        protected string  AppVersion;
-        public CustomDataRJson(string name, string value, int flow, string ID, string app_version):base(name,value,flow)
+	    private readonly string _id;
+        private readonly Version _appVersion;
+        public CustomDataRJson(string name, string value, int flow, string id, Version appVersion):base(name,value,flow)
         {
-            this.ID = ID;
-            AppVersion = app_version;
+            _id = id;
+            _appVersion = appVersion;
         }
 
         public override Hashtable GetJsonHashTable()
         {
             var json = base.GetJsonHashTable();
-            json.Add("aver", AppVersion);
-            json.Add("ID", ID);
+            json.Add("aver", _appVersion.ToString());
+            json.Add("ID", _id);
             return json;
         }
     }

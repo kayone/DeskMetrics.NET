@@ -14,31 +14,30 @@
 //                                                                       //
 // **********************************************************************//
 
-using System;
 using System.Collections;
 
 namespace DeskMetrics.Json
 {
 	public class EventJson : BaseJson
     {
-        protected string Category;
-        protected string Name;
-        protected int Flow;
+        private readonly string _category;
+        private readonly string _name;
+        private readonly int _flow;
 
         public EventJson(string category, string name, int flow)
             : base(EventType.Event, BaseJson.Session)
         {
-            Category = category;
-            Name = name;
-            Flow = flow;
+            _category = category;
+            _name = name;
+            _flow = flow;
         }
 
         public override Hashtable GetJsonHashTable()
         {
             var json = base.GetJsonHashTable();
-            json.Add("ca", Category);
-            json.Add("nm", Name);
-            json.Add("fl", Flow);
+            json.Add("ca", _category);
+            json.Add("nm", _name);
+            json.Add("fl", _flow);
 
             return json;
         }
