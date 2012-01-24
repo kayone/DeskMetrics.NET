@@ -1,5 +1,6 @@
 using System;
 using DeskMetrics;
+using DeskMetrics.Watcher;
 
 namespace DeskMetricsConsole
 {
@@ -7,9 +8,9 @@ namespace DeskMetricsConsole
     {
         public static void Main(string[] args)
         {
-            var watcher = new DeskMetrics.Watcher("");
+            var watcher = new Client(new Guid().ToString(), "4ea8d347a14ad71442000002",new Version(0, 1) );
             Console.Write("Starting...");
-            watcher.Start("4d47c012d9340b116a000000", new Version(0, 1));
+            watcher.Start();
             Console.WriteLine("[ok]");
 
             Console.Write("Adding event...");
@@ -27,10 +28,6 @@ namespace DeskMetricsConsole
 
             Console.Write("Adding custom data...");
             watcher.TrackCustomData("DeskMetricsConsole", "CustomData");
-            Console.WriteLine("[ok]");
-
-            Console.Write("Adding custom data in real time (with cache support)...");
-            watcher.TrackCustomDataR("DeskMetricsConsole", "MyCustomDataInRealTime");
             Console.WriteLine("[ok]");
 
             Console.Write("Adding log");

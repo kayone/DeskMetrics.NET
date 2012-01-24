@@ -35,7 +35,7 @@ namespace DeskMetrics.Json
             else
                 Session = session;
 
-            _timeStamp = Util.GetTimeStamp();
+            _timeStamp = GetTimeStamp();
             _jsonHashTable = new Hashtable();
         }
 
@@ -50,6 +50,15 @@ namespace DeskMetrics.Json
         public string GetJson()
         {
             return JsonBuilder.GetJsonFromHashTable(GetJsonHashTable());
+        }
+
+        private static int GetTimeStamp()
+        {
+            double timeStamp = 0;
+            var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            var diff = DateTime.UtcNow - origin;
+            timeStamp = Math.Floor(diff.TotalSeconds);
+            return Convert.ToInt32(timeStamp);
         }
     }
 }

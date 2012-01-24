@@ -18,15 +18,17 @@ using System;
 using System.Collections;
 using DeskMetrics.OperatingSystem;
 using DeskMetrics.OperatingSystem.Hardware;
+using DeskMetrics.Watcher;
 
 namespace DeskMetrics.Json
 {
-	public class StartAppJson:BaseJson
+    public class StartAppJson : BaseJson
     {
-        private Watcher Watcher;
-        public StartAppJson(Watcher w):base(EventType.StartApplication, "")
+        private Client _client;
+        public StartAppJson(Client client)
+            : base(EventType.StartApplication, "")
         {
-            Watcher = w;
+            _client = client;
         }
 
         public override Hashtable GetJsonHashTable()
@@ -34,9 +36,9 @@ namespace DeskMetrics.Json
             IOperatingSystem GetOsInfo = OperatingSystemFactory.GetOperatingSystem();
             IHardware GetHardwareInfo = GetOsInfo.Hardware;
             var json = base.GetJsonHashTable();
-			
-            json.Add("aver",Watcher.ApplicationVersion);
-            json.Add("ID", Watcher.UserId);
+
+            json.Add("aver", _client.ApplicationVersion.ToString());
+            json.Add("ID", _client.UserId);
             json.Add("osv", GetOsInfo.Version);
             json.Add("ossp", GetOsInfo.ServicePack);
             json.Add("osar", GetOsInfo.Architecture);
@@ -46,7 +48,7 @@ namespace DeskMetrics.Json
             json.Add("oslng", GetOsInfo.Lcid);
             json.Add("osscn", GetHardwareInfo.ScreenResolution);
             json.Add("cnm", GetHardwareInfo.ProcessorName);
-			json.Add("car", GetHardwareInfo.ProcessorArchicteture);
+            json.Add("car", GetHardwareInfo.ProcessorArchicteture);
             json.Add("cbr", GetHardwareInfo.ProcessorBrand);
             json.Add("cfr", GetHardwareInfo.ProcessorFrequency);
             json.Add("ccr", GetHardwareInfo.ProcessorCores);
@@ -56,6 +58,6 @@ namespace DeskMetrics.Json
             json.Add("dfr", "null");
             return json;
         }
-    }	
+    }
 }
 

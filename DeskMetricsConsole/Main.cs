@@ -1,5 +1,6 @@
 using System;
 using DeskMetrics;
+using DeskMetrics.Watcher;
 
 namespace DeskMetricsConsole
 {
@@ -14,7 +15,7 @@ namespace DeskMetricsConsole
 			}
 			
 			
-			var watcher = new Watcher("");
+			var watcher = new Client("aaaa";
 			if (args[0] == "Install")
 			{
 				watcher.TrackInstall(args[2],args[1]);

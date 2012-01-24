@@ -5,8 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeskMetrics", "DeskMetrics.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeskMetricsTestConsole", "DeskMetricsTestConsole\DeskMetricsTestConsole.csproj", "{62692EC4-2971-4849-B68C-C107B7DEE13F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeskMetricsConsole", "DeskMetricsConsole\DeskMetricsConsole.csproj", "{38892C9A-C75A-4296-A8B5-2A106651BF13}"
-EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = com.deskmetrics.vsmdi
@@ -42,18 +40,6 @@ Global
 		{62692EC4-2971-4849-B68C-C107B7DEE13F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{62692EC4-2971-4849-B68C-C107B7DEE13F}.Release|x86.ActiveCfg = Release|Any CPU
 		{62692EC4-2971-4849-B68C-C107B7DEE13F}.Release|x86.Build.0 = Release|Any CPU
-		{38892C9A-C75A-4296-A8B5-2A106651BF13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{38892C9A-C75A-4296-A8B5-2A106651BF13}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{38892C9A-C75A-4296-A8B5-2A106651BF13}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{38892C9A-C75A-4296-A8B5-2A106651BF13}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{38892C9A-C75A-4296-A8B5-2A106651BF13}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{38892C9A-C75A-4296-A8B5-2A106651BF13}.Debug|x86.Build.0 = Debug|Any CPU
-		{38892C9A-C75A-4296-A8B5-2A106651BF13}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{38892C9A-C75A-4296-A8B5-2A106651BF13}.Release|Any CPU.Build.0 = Release|Any CPU
-		{38892C9A-C75A-4296-A8B5-2A106651BF13}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{38892C9A-C75A-4296-A8B5-2A106651BF13}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{38892C9A-C75A-4296-A8B5-2A106651BF13}.Release|x86.ActiveCfg = Release|Any CPU
-		{38892C9A-C75A-4296-A8B5-2A106651BF13}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

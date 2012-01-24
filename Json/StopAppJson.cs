@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections;
+using DeskMetrics.Watcher;
 
 namespace DeskMetrics.Json
 {
@@ -25,11 +26,6 @@ namespace DeskMetrics.Json
             : base(EventType.StopApplication, BaseJson.Session)
         { 
 
-        }
-
-        public override Hashtable GetJsonHashTable()
-        {
-            return base.GetJsonHashTable(); 
         }
     }
 }

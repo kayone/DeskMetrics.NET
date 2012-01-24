@@ -58,10 +58,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Watcher\EventType.cs" />
     <Compile Include="Watcher\Services.cs" />
-    <Compile Include="Watcher\Util.cs" />
-    <Compile Include="Watcher\Watcher.cs" />
+    <Compile Include="Watcher\Client.cs" />
     <Compile Include="Watcher\Settings.cs" />
-    <Compile Include="Watcher\CurrentUser.cs" />
     <Compile Include="OperatingSystem\MacOSXOperatingSystem.cs" />
     <Compile Include="OperatingSystem\OperatingSystemFactory.cs" />
     <Compile Include="OperatingSystem\UnixOperatingSystem.cs" />

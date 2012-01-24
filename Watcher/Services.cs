@@ -13,147 +13,64 @@
 //     LICENSE with this source code.                                    //
 //                                                                       //
 // **********************************************************************//
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
 using System.Net;
-using System.Collections;
 using System.Net.Security;
-using System.Threading;
 using System.Security.Cryptography.X509Certificates;
 
-namespace DeskMetrics
+namespace DeskMetrics.Watcher
 {
     public class Services
     {
-        private string _proxyusername;
+        public string ProxyHost { get; set; }
 
-        private string _proxypassword;
+        public string ProxyUserName { get; set; }
 
-        private string _proxyhost;
+        public string ProxyPassword { get; set; }
 
-        private Int32 _proxyport;
+        public int ProxyPort { get; set; }
 
-        public string ProxyHost
+        internal string PostServer { get; set; }
+
+        public int PostPort { get; set; }
+
+        public int PostTimeOut { get; set; }
+
+        private readonly Client _client;
+        
+        internal Services(Client client)
         {
-            get
-            {
-                return _proxyhost;
-            }
-            set
-            {
-                _proxyhost = value;
-            }
+            PostTimeOut = Settings.Timeout;
+            PostServer = Settings.DefaultServer;
+            PostPort = Settings.DefaultPort;
+            _client = client;
         }
 
-        public string ProxyUserName
-        {
-            get
-            {
-                return _proxyusername;
-            }
-            set
-            {
-                _proxyusername = value;
-            }
-        }
-
-        public string ProxyPassword
-        {
-            get
-            {
-                return _proxypassword;
-            }
-            set
-            {
-                _proxypassword = value;
-            }
-        }
-
-        public Int32 ProxyPort
-        {
-            get
-            {
-                return _proxyport;
-            }
-            set
-            {
-                _proxyport = value;
-            }
-        }
-
-        string _postserver = Settings.DefaultServer;
-        internal string PostServer
-        {
-            get
-            {
-                return _postserver;
-            }
-            set
-            {
-                _postserver = value;
-            }
-        }
-
-        int _postport = Settings.DefaultPort;
-        public int PostPort
-        {
-            get
-            {
-                return _postport;
-            }
-            set
-            {
-                _postport = value;
-            }
-        }
-
-        int _posttimeout = Settings.Timeout;
-        public int PostTimeOut
-        {
-            get
-            {
-                return _posttimeout;
-            }
-            set
-            {
-                _posttimeout = value;
-            }
-        }
-
-        private Watcher watcher;
-        internal Services(Watcher watcher)
-        {
-            this.watcher = watcher;
-        }
-
-        protected object ObjectLock = new Object();
-
-        Thread SendDataThread;
+        private object ObjectLock = new Object();
 
         internal string PostData(string PostMode, string json)
         {
             lock (ObjectLock)
             {
-                watcher.CheckApplicationCorrectness();
                 string url;
 
                 if (PostPort == 443)
                 {
-                    System.Net.ServicePointManager.ServerCertificateValidationCallback +=
+                    ServicePointManager.ServerCertificateValidationCallback +=
                         delegate(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors sslError)
                         {
                             bool validationResult = true;
                             return validationResult;
                         };
 
-                    url = "https://" + watcher.ApplicationId + "." + Settings.DefaultServer + PostMode;
+                    url = "https://" + _client.ApplicationId + "." + Settings.DefaultServer + PostMode;
                 }
                 else
                 {
-                    url = "http://" + watcher.ApplicationId + "." + Settings.DefaultServer + PostMode;
+                    url = "http://" + _client.ApplicationId + "." + Settings.DefaultServer + PostMode;
                 }
 
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
@@ -215,8 +132,8 @@ namespace DeskMetrics
         {
             lock (ObjectLock)
             {
-                if (watcher.Started)
-                    if (!string.IsNullOrEmpty(watcher.ApplicationId) && (watcher.Enabled == true))
+                if (_client.Started)
+                    if (!string.IsNullOrEmpty(_client.ApplicationId) && (_client.Enabled == true))
                         PostData(Settings.ApiEndpoint, json);
             }
         }

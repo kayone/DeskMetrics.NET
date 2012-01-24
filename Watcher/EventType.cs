@@ -14,20 +14,14 @@
 //                                                                       //
 // **********************************************************************//
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace DeskMetrics
+namespace DeskMetrics.Watcher
 {
     public class EventType
     {
         public const string StartApplication = "strApp";
         public const string StopApplication = "stApp";
         public const string Event = "ev";
-        public const string CustomData = "ctD";
-        public const string CustomDataR = "ctDR";
+        public const string CustomData = "ctDR";
         public const string Log = "lg";
         public const string Exception = "exC";
         public const string EventValue = "evV";
