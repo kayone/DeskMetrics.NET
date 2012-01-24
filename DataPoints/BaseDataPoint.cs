@@ -20,8 +20,8 @@ namespace DeskMetrics.DataPoints
         [JsonProperty("ts")]
         public int TimeStamp { get { return GetTimeStamp(); } }
 
-        //[JsonProperty("fl")]
-        //public int Flow { get; set; }
+        [JsonProperty("fl")]
+        public int Flow { get; set; }
 
         private static int GetTimeStamp()
         {

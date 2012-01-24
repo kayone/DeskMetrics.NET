@@ -1,25 +1,8 @@
-﻿// **********************************************************************//
-//                                                                       //
-//     DeskMetrics NET - Client.cs                                      //
-//     Copyright (c) 2010-2011 DeskMetrics Limited                       //
-//                                                                       //
-//     http://deskmetrics.com                                            //
-//     http://support.deskmetrics.com                                    //
-//                                                                       //
-//     support@deskmetrics.com                                           //
-//                                                                       //
-//     This code is provided under the DeskMetrics Modified BSD License  //
-//     A copy of this license has been distributed in a file called      //
-//     LICENSE with this source code.                                    //
-//                                                                       //
-// **********************************************************************//
-
-using System;
-using System.Collections.Generic;
+﻿using System;
 using DeskMetrics.DataPoints;
 using DeskMetrics.Json;
 
-namespace DeskMetrics.Watcher
+namespace DeskMetrics
 {
     public class Client : IDisposable
     {
@@ -58,8 +41,7 @@ namespace DeskMetrics.Watcher
         public void Start()
         {
             Started = true;
-            var json = new StartAppDataPoint();
-            PostToServer(json);
+            Post<StartAppDataPoint>();
         }
 
         /// <summary>
@@ -67,7 +49,7 @@ namespace DeskMetrics.Watcher
         /// </summary>
         public void Stop()
         {
-            PostToServer(new StopAppDataPoint());
+            Post<StopAppDataPoint>();
             Started = false;
         }
 
@@ -79,7 +61,7 @@ namespace DeskMetrics.Watcher
         public void TrackEvent(string eventCategory, string eventName)
         {
             var json = new EventDataPoint { EventCategory = eventCategory, EventName = eventName };
-            PostToServer(json);
+            Post(json);
         }
 
         /// <summary>
@@ -109,7 +91,7 @@ namespace DeskMetrics.Watcher
                                    EventCompleted = completed
                                };
 
-                PostToServer(json);
+                Post(json);
             }
         }
 
@@ -124,16 +106,14 @@ namespace DeskMetrics.Watcher
         /// </param>
         public void TrackInstall()
         {
-            var json = new InstallDataPoint();
-            PostToServer(json);
+            Post<InstallDataPoint>();
         }
         /// <summary>
         /// Tracks an uninstall
         /// </summary>
         public void TrackUninstall()
         {
-            var json = new UninstallDataPoint();
-            PostToServer(json);
+            Post<UninstallDataPoint>();
         }
 
         /// <summary>
@@ -145,10 +125,8 @@ namespace DeskMetrics.Watcher
         public void TrackException(Exception exception)
         {
             var json = new ExceptionDataPoint { Exception = exception };
-            PostToServer(json);
+            Post(json);
         }
-
-
 
         /// <summary>
         /// Tracks an event with custom value
@@ -165,7 +143,7 @@ namespace DeskMetrics.Watcher
         public void TrackEventValue(string eventCategory, string eventName, string eventValue)
         {
             var json = new EventValueDataPoint { EventCategory = eventCategory, EventName = eventName, EventValue = eventValue };
-            PostToServer(json);
+            Post(json);
         }
 
         /// <summary>
@@ -180,7 +158,7 @@ namespace DeskMetrics.Watcher
         public void TrackCustomData(string key, string value)
         {
             var json = new CustomDataDataPoint { CustomDataKey = key, CustomDataValue = value };
-            PostToServer(json);
+            Post(json);
         }
 
         /// <summary>
@@ -192,23 +170,28 @@ namespace DeskMetrics.Watcher
         public void TrackLog(string message)
         {
             var json = new LogDataPoint { LogMessage = message };
-            PostToServer(json);
+            Post(json);
         }
 
-        private void PostToServer(BaseDataPoint dataPoint)
+        private void Post<T>() where T : BaseDataPoint, new()
+        {
+            Post(new T());
+        }
+
+        private void Post(BaseDataPoint dataPoint)
         {
             lock (_objectLock)
             {
-                //if (!Started)
-                //throw new InvalidOperationException("The application is not started");
-
-                //dataPoint.Flow = GetFlowNumber();
+                if (!Started)
+                    throw new InvalidOperationException("The application is not started");
+                
+                dataPoint.Flow =  _flowglobalnumber + 1;
                 dataPoint.SessionId = SessionId;
                 dataPoint.UserId = UserId;
                 dataPoint.Version = ApplicationVersion.ToString();
 
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(dataPoint);
-                _services.PostData(Settings.ApiEndpoint, json);
+                _services.PostData(json);
             }
         }
 
@@ -216,7 +199,7 @@ namespace DeskMetrics.Watcher
         {
             lock (_objectLock)
             {
-                _flowglobalnumber = _flowglobalnumber + 1;
+               
                 return _flowglobalnumber;
             }
         }

@@ -1,6 +1,5 @@
 using DeskMetrics.OperatingSystem;
 using DeskMetrics.OperatingSystem.Hardware;
-using DeskMetrics.Watcher;
 using Newtonsoft.Json;
 
 namespace DeskMetrics.DataPoints

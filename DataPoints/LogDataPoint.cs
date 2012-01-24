@@ -1,4 +1,3 @@
-using DeskMetrics.Watcher;
 using Newtonsoft.Json;
 
 namespace DeskMetrics.DataPoints

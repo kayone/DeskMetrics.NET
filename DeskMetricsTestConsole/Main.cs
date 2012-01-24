@@ -1,5 +1,5 @@
 using System;
-using DeskMetrics.Watcher;
+using DeskMetrics;
 
 namespace DeskMetricsConsole
 {
