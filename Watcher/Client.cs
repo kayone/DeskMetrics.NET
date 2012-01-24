@@ -205,7 +205,7 @@ namespace DeskMetrics.Watcher
                 if (!Started)
                     throw new InvalidOperationException("The application is not started");
 
-                _services.PostData(Settings.ApiEndpoint, json.GetJson());
+                _services.PostData(Settings.ApiEndpoint, json.GetJson(SessionId,UserId));
             }
         }
 

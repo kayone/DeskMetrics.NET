@@ -29,9 +29,9 @@ namespace DeskMetrics.Json
             _appVersion = appVersion;
         }
 
-        public override Hashtable GetJsonHashTable()
+	    protected override Hashtable GetJsonHashTable()
         {
-            var json = base.GetJsonHashTable();
+            var json = new Hashtable();
             json.Add("aver", _appVersion.ToString());
             json.Add("ID", _id);
             return json;

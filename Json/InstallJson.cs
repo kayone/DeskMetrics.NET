@@ -25,19 +25,15 @@ namespace DeskMetrics.Json
 		public string Version;
 		
 		public InstallJson(string version)
-			:base("ist",BaseJson.Session)
+			:base("ist")
 		{
 			ID = System.Guid.NewGuid().ToString().Replace("-", "").ToUpper();
 			Version = version;
-            if (BaseJson.Session == null)
-            {
-                BaseJson.Session = System.Guid.NewGuid().ToString().Replace("-", "").ToUpper();
-            }
 		}
-		
-		public override Hashtable GetJsonHashTable ()
+
+	    protected override Hashtable GetJsonHashTable ()
 		{
-			var json = base.GetJsonHashTable();
+			var json = new Hashtable();
 			json.Add("ID",ID);
 			json.Add("aver",Version);
 			return json;

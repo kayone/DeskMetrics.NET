@@ -32,9 +32,9 @@ namespace DeskMetrics.Json
 			Type = EventType.EventPeriod;
         }
 
-        public override Hashtable GetJsonHashTable()
+	    protected override Hashtable GetJsonHashTable()
         {
-            var json = base.GetJsonHashTable();
+            var json = new Hashtable();
             json.Add("tm", Time);
             json.Add("ec", Completed?"1":"0");
             return json;

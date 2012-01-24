@@ -1,5 +1,4 @@
 using System;
-using DeskMetrics;
 using DeskMetrics.Watcher;
 
 namespace DeskMetricsConsole
@@ -8,7 +7,7 @@ namespace DeskMetricsConsole
     {
         public static void Main(string[] args)
         {
-            var watcher = new Client(new Guid().ToString(), "4ea8d347a14ad71442000002",new Version(0, 1) );
+            var watcher = new Client(Guid.NewGuid().ToString(), "4ea8d347a14ad71442000002",new Version(0, 1) );
             Console.Write("Starting...");
             watcher.Start();
             Console.WriteLine("[ok]");
@@ -34,7 +33,7 @@ namespace DeskMetricsConsole
             watcher.TrackLog("This is my log, babe");
             Console.Write("[ok]");
 
-            Console.Write("Finishing app and sending data to DeskMetrics");
+            Console.Write("Sending stop");
             watcher.Stop();
             Console.ReadLine();
         }

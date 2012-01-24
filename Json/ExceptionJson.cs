@@ -25,15 +25,15 @@ namespace DeskMetrics.Json
         protected Exception Exception;
         protected int Flow;
         public ExceptionJson(Exception e,int flow)
-            : base(EventType.Exception, BaseJson.Session)
+            : base(EventType.Exception)
         {
             Exception = e;
             Flow = flow;
         }
 
-        public override Hashtable GetJsonHashTable()
+	    protected override Hashtable GetJsonHashTable()
         {
-            var json = base.GetJsonHashTable();
+            var json = new Hashtable();
             json.Add("msg", Exception.Message.Trim().Replace("\r\n", "").Replace("  ", " ").Replace("\n", "").Replace(@"\n", "").Replace("\r", "").Replace("&", "").Replace("|", "").Replace(">", "").Replace("<", "").Replace("\t", "").Replace(@"\", @"/"));
             if (Exception.StackTrace != null)
 				json.Add("stk", Exception.StackTrace.Trim().Replace("\r\n", "").Replace("  ", " ").Replace("\n", "").Replace(@"\n", "").Replace("\r", "").Replace("&", "").Replace("|", "").Replace(">", "").Replace("<", "").Replace("\t", "").Replace(@"\", @"/"));

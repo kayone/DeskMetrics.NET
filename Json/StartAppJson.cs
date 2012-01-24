@@ -26,19 +26,18 @@ namespace DeskMetrics.Json
     {
         private Client _client;
         public StartAppJson(Client client)
-            : base(EventType.StartApplication, "")
+            : base(EventType.StartApplication)
         {
             _client = client;
         }
 
-        public override Hashtable GetJsonHashTable()
+        protected override Hashtable GetJsonHashTable()
         {
             IOperatingSystem GetOsInfo = OperatingSystemFactory.GetOperatingSystem();
             IHardware GetHardwareInfo = GetOsInfo.Hardware;
-            var json = base.GetJsonHashTable();
+            var json = new Hashtable();
 
             json.Add("aver", _client.ApplicationVersion.ToString());
-            json.Add("ID", _client.UserId);
             json.Add("osv", GetOsInfo.Version);
             json.Add("ossp", GetOsInfo.ServicePack);
             json.Add("osar", GetOsInfo.Architecture);

@@ -26,16 +26,16 @@ namespace DeskMetrics.Json
         private readonly int _flow;
 
         public EventJson(string category, string name, int flow)
-            : base(EventType.Event, BaseJson.Session)
+            : base(EventType.Event)
         {
             _category = category;
             _name = name;
             _flow = flow;
         }
 
-        public override Hashtable GetJsonHashTable()
+	    protected override Hashtable GetJsonHashTable()
         {
-            var json = base.GetJsonHashTable();
+            var json = new Hashtable();
             json.Add("ca", _category);
             json.Add("nm", _name);
             json.Add("fl", _flow);

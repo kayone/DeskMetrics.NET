@@ -20,12 +20,16 @@ using DeskMetrics.Watcher;
 
 namespace DeskMetrics.Json
 {
-	public class StopAppJson : BaseJson
+    public class StopAppJson : BaseJson
     {
         public StopAppJson()
-            : base(EventType.StopApplication, BaseJson.Session)
-        { 
+            : base(EventType.StopApplication)
+        {
+        }
 
+        protected override Hashtable GetJsonHashTable()
+        {
+            return new Hashtable();
         }
     }
 }

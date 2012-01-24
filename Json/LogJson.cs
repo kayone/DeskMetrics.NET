@@ -24,15 +24,15 @@ namespace DeskMetrics.Json
         protected string Message;
         protected int Flow;
         public LogJson(string msg,int flow)
-            : base(EventType.Log, BaseJson.Session)
+            : base(EventType.Log)
         {
             Message = msg;
             Flow = flow;
         }
 
-        public override Hashtable GetJsonHashTable()
+	    protected override Hashtable GetJsonHashTable()
         {
-            var json = base.GetJsonHashTable();
+            var json = new Hashtable();
             json.Add("ms", Message);
             json.Add("fl", Flow);
             return json;

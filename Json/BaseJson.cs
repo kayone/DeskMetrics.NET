@@ -21,35 +21,24 @@ namespace DeskMetrics.Json
     public abstract class BaseJson
     {
         protected string Type;
-        protected static string Session { get; set; }
-
         private readonly int _timeStamp;
-        private readonly Hashtable _jsonHashTable;
 
-        protected BaseJson(string type, string session)
+        protected BaseJson(string type)
         {
             Type = type;
-
-            if (Type == "strApp") //StartApp
-                Session = System.Guid.NewGuid().ToString().Replace("-", "").ToUpper();
-            else
-                Session = session;
-
             _timeStamp = GetTimeStamp();
-            _jsonHashTable = new Hashtable();
         }
 
-        public virtual Hashtable GetJsonHashTable()
-        {
-            _jsonHashTable.Add("tp", Type);
-            _jsonHashTable.Add("ss", Session);
-            _jsonHashTable.Add("ts", _timeStamp);
-            return _jsonHashTable;
-        }
+        protected abstract Hashtable GetJsonHashTable();
 
-        public string GetJson()
+        public string GetJson(string sessionId, string userId)
         {
-            return JsonBuilder.GetJsonFromHashTable(GetJsonHashTable());
+            var hashTable = GetJsonHashTable();
+            hashTable.Add("tp", Type);
+            hashTable.Add("ss", sessionId);
+            hashTable.Add("ts", _timeStamp);
+            hashTable.Add("ID", userId);
+            return JsonBuilder.GetJsonFromHashTable(hashTable);
         }
 
         private static int GetTimeStamp()

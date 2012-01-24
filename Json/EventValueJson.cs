@@ -31,9 +31,9 @@ namespace DeskMetrics.Json
             Value = value;
         }
 
-        public override Hashtable GetJsonHashTable()
+	    protected override Hashtable GetJsonHashTable()
         {
-            var json = base.GetJsonHashTable();
+            var json = new Hashtable();
             json.Add("vl", Value);
             return json;
         }
