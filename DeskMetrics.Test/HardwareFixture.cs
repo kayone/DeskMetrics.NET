@@ -41,18 +41,19 @@ namespace DeskMetrics.Test
         [Test]
         public void MemoryFree()
         {
-            _hardware.MemoryFree.Should().BeInRange(100, 16000000);
+            _hardware.MemoryFree.Should().BeInRange(100, 160000000000);
         }
 
         [Test]
         public void MemoryTotal()
-        {
-            _hardware.MemoryTotal.Should().BeInRange(1000000, 16000000); //1gb-16gb
+        {                                           
+            _hardware.MemoryTotal.Should().BeInRange(1000000000, 12000000000 ); //1gb-12gb
         }
 
         [Test]
         public void OsVersion()
         {
+            _hardware.OsVersion.Should().NotContain("Microsoft");
             _hardware.OsVersion.Should().Contain("Windows");
         }
 

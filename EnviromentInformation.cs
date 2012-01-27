@@ -55,13 +55,13 @@ namespace DeskMetrics
             ProcessorName = Win32Processor["Name"].Value.ToString();
             ProcessorArchicteture = Convert.ToInt32(Win32Processor["AddressWidth"].Value);
             ProcessorCores = Convert.ToInt32(Win32Processor["NumberOfCores"].Value);
-            ProcessorBrand = Win32Processor["Manufacturer"].Value.ToString();
+            ProcessorBrand = CleanUpBrand(Win32Processor["Manufacturer"].Value.ToString());
             ProcessorFrequency = Convert.ToInt32(Win32Processor["MaxClockSpeed"].Value);
 
-            MemoryTotal = Convert.ToDouble(Win32OperatingSystem["TotalVisibleMemorySize"].Value);
-            MemoryFree = Convert.ToDouble(Win32OperatingSystem["FreePhysicalMemory"].Value);
+            MemoryTotal = Convert.ToDouble(Win32OperatingSystem["TotalVisibleMemorySize"].Value) * 1024;
+            MemoryFree = Convert.ToDouble(Win32OperatingSystem["FreePhysicalMemory"].Value) * 1024;
 
-            OsVersion = Win32OperatingSystem["Caption"].Value.ToString();
+            OsVersion = RemoveEdition(Win32OperatingSystem["Caption"].Value.ToString());
             OsServicePack = Win32OperatingSystem["CSDVersion"].Value.ToString();
 
             Language = Thread.CurrentThread.CurrentCulture.LCID;
@@ -78,6 +78,28 @@ namespace DeskMetrics
             GetFrameworkVersion();
 
             ScreenResolution = string.Empty;
+        }
+
+        private string CleanUpBrand(string brand)
+        {
+            if (brand.ToLower().Contains("intel")) return "Intel";
+            if (brand.ToLower().Contains("amd")) return "AMD";
+
+            return brand;
+        }
+
+        private static string RemoveEdition(string caption)
+        {
+            var lowerCaption = caption.ToLower();
+            if (lowerCaption.Contains("windows 7")) return "Windows 7";
+            if (lowerCaption.Contains("xp")) return "Windows XP";
+            if (lowerCaption.Contains("server 2008 r")) return "Server 2008 R2";
+            if (lowerCaption.Contains("server 2008")) return "Server 2008";
+            if (lowerCaption.Contains("server 2003 r")) return "Server 2003 R2";
+            if (lowerCaption.Contains("server 2003")) return "Server 2003";
+            if (lowerCaption.Contains("home server 2003")) return "Server 2003";
+
+            return caption.Replace("Microsoft", "");
         }
 
         private void GetFrameworkVersion()

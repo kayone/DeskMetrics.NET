@@ -211,7 +211,7 @@ namespace DeskMetrics
             {
                 var session = SessionId;
 
-                if (String.IsNullOrWhiteSpace(SessionId))
+                if (String.IsNullOrEmpty(SessionId))
                 {
                     session = SessionId = Guid.NewGuid().ToString().Replace("-", "").ToUpper();
                 }

@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DeskMetrics</RootNamespace>
-    <AssemblyName>DeskMetrics</AssemblyName>
+    <AssemblyName>DeskMetrics.NET</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ReleaseVersion>2.0</ReleaseVersion>
@@ -34,7 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\DeskMetrics.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\DeskMetrics.NET.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
