@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace DeskMetrics.DataPoints
 {
-    public class EventPeriodDataPoint : EventDataPoint
+    internal class EventPeriodDataPoint : EventDataPoint
     {
         [JsonProperty("tm")]
         public double EventDuration { get; set; }

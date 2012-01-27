@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace DeskMetrics.DataPoints
 {
-    public class LogDataPoint : BaseDataPoint
+    internal class LogDataPoint : BaseDataPoint
     {
         [JsonProperty("msg")]
         public string LogMessage { get; set; }

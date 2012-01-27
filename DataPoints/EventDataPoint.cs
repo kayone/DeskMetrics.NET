@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace DeskMetrics.DataPoints
 {
-	public class EventDataPoint : BaseDataPoint
+    internal class EventDataPoint : BaseDataPoint
     {
         [JsonProperty("ca")]
         public string EventCategory { get; set; }

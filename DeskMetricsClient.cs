@@ -3,19 +3,41 @@ using DeskMetrics.DataPoints;
 
 namespace DeskMetrics
 {
-    public class DeskMetricsClient : IDisposable
+    public class DeskMetricsClient : IDisposable, IDeskMetricsClient
     {
         private readonly Object _objectLock = new Object();
-        
+
         private int _flowglobalnumber;
         private readonly Services _services;
 
-        public  bool Started { get; private set; }
-        public string SessionId { get; set; }
+        /// <summary>
+        /// Indicates if the Start() has been called and a session is active.
+        /// </summary>
+        public bool Started { get; private set; }
+
+        /// <summary>
+        /// Currently active session. will be null if no sessions are active.
+        /// </summary>
+        public string SessionId { get; private set; }
+
+        /// <summary>
+        /// DeskmMtrics Application ID
+        /// </summary>
         public string ApplicationId { get; private set; }
-        public Version ApplicationVersion { get; set; }
-        public string Error { get; set; }
+
+        /// <summary>
+        /// Version of application being tracked.
+        /// </summary>
+        public Version ApplicationVersion { get; private set; }
+
+        /// <summary>
+        /// Checks if application events are tracked.
+        /// </summary>
         public bool Enabled { get; set; }
+
+        /// <summary>
+        /// Anonymous identifier of the user being tracked.
+        /// </summary>
         public string UserId { get; private set; }
 
         public DeskMetricsClient(string userId, string appId, Version appVersion)
@@ -25,7 +47,6 @@ namespace DeskMetrics
             UserId = userId;
             Enabled = true;
             Started = false;
-            SessionId = Guid.NewGuid().ToString().Replace("-", "").ToUpper();
 
             _services = new Services(this);
         }
@@ -36,7 +57,8 @@ namespace DeskMetrics
         public void Start()
         {
             Started = true;
-            Post<StartAppDataPoint>();
+            SessionId = Guid.NewGuid().ToString().Replace("-", "").ToUpper();
+            Register<StartAppDataPoint>();
         }
 
         /// <summary>
@@ -44,8 +66,9 @@ namespace DeskMetrics
         /// </summary>
         public void Stop()
         {
-            Post<StopAppDataPoint>();
+            Register<StopAppDataPoint>();
             Started = false;
+            SessionId = null;
         }
 
         /// <summary>
@@ -53,10 +76,10 @@ namespace DeskMetrics
         /// </summary>
         /// <param name="eventCategory">EventCategory Category</param>
         /// <param name="eventName">EventCategory eventName</param>
-        public void TrackEvent(string eventCategory, string eventName)
+        public void RegisterEvent(string eventCategory, string eventName)
         {
             var json = new EventDataPoint { EventCategory = eventCategory, EventName = eventName };
-            Post(json);
+            Register(json);
         }
 
         /// <summary>
@@ -74,7 +97,7 @@ namespace DeskMetrics
         /// <param name="completed">
         /// True if the event was completed.
         /// </param>
-        public void TrackEventPeriod(string eventCategory, string eventName, TimeSpan eventTime, bool completed)
+        public void RegisterEventPeriod(string eventCategory, string eventName, TimeSpan eventTime, bool completed)
         {
             if (Started)
             {
@@ -86,24 +109,24 @@ namespace DeskMetrics
                                    EventCompleted = completed
                                };
 
-                Post(json);
+                Register(json);
             }
         }
 
         /// <summary>
         /// Tracks an installation
         /// </summary>
-        public void TrackInstall()
+        public void RegisterInstall()
         {
-            Post<InstallDataPoint>();
+            RegisterStandAlone<InstallDataPoint>();
         }
 
         /// <summary>
         /// Tracks an uninstall
         /// </summary>
-        public void TrackUninstall()
+        public void RegisterUninstall()
         {
-            Post<UninstallDataPoint>();
+            RegisterStandAlone<UninstallDataPoint>();
         }
 
         /// <summary>
@@ -112,10 +135,10 @@ namespace DeskMetrics
         /// <param name="exception">
         /// The exception object to be tracked
         /// </param>
-        public void TrackException(Exception exception)
+        public void RegisterException(Exception exception)
         {
             var json = new ExceptionDataPoint { Exception = exception };
-            Post(json);
+            Register(json);
         }
 
         /// <summary>
@@ -130,10 +153,10 @@ namespace DeskMetrics
         /// <param name="eventValue">
         /// The custom value
         /// </param>
-        public void TrackEventValue(string eventCategory, string eventName, string eventValue)
+        public void RegisterEventValue(string eventCategory, string eventName, string eventValue)
         {
             var json = new EventValueDataPoint { EventCategory = eventCategory, EventName = eventName, EventValue = eventValue };
-            Post(json);
+            Register(json);
         }
 
         /// <summary>
@@ -145,10 +168,10 @@ namespace DeskMetrics
         /// <param name="value">
         /// The custom data value
         /// </param>
-        public void TrackCustomData(string key, string value)
+        public void RegisterCustomData(string key, string value)
         {
             var json = new CustomDataDataPoint { CustomDataKey = key, CustomDataValue = value };
-            Post(json);
+            RegisterStandAlone(json);
         }
 
         /// <summary>
@@ -157,26 +180,44 @@ namespace DeskMetrics
         /// <param name="message">
         /// The log message
         /// </param>
-        public void TrackLog(string message)
+        public void RegisterLog(string message)
         {
             var json = new LogDataPoint { LogMessage = message };
-            Post(json);
+            Register(json);
         }
 
-        private void Post<T>() where T : BaseDataPoint, new()
+        private void Register<T>() where T : BaseDataPoint, new()
         {
-            Post(new T());
+            Register(new T());
         }
 
-        private void Post(BaseDataPoint dataPoint)
+
+        private void Register(BaseDataPoint dataPoint)
+        {
+            if (!Started)
+                throw new InvalidOperationException("The application is not started");
+
+            RegisterStandAlone(dataPoint);
+        }
+
+        private void RegisterStandAlone<T>() where T : BaseDataPoint, new()
+        {
+            RegisterStandAlone(new T());
+        }
+
+        private void RegisterStandAlone(BaseDataPoint dataPoint)
         {
             lock (_objectLock)
             {
-                if (!Started)
-                    throw new InvalidOperationException("The application is not started");
-                
+                var session = SessionId;
+
+                if (String.IsNullOrWhiteSpace(SessionId))
+                {
+                    session = SessionId = Guid.NewGuid().ToString().Replace("-", "").ToUpper();
+                }
+
                 dataPoint.Flow = _flowglobalnumber++;
-                dataPoint.SessionId = SessionId;
+                dataPoint.SessionId = session;
                 dataPoint.UserId = UserId;
                 dataPoint.Version = ApplicationVersion.ToString();
 
@@ -184,7 +225,7 @@ namespace DeskMetrics
                 _services.PostData(json);
             }
         }
-
+        
         void IDisposable.Dispose()
         {
             try
@@ -196,7 +237,7 @@ namespace DeskMetrics
             }
             catch (Exception e)
             {
-                Error = e.Message;
+                //Error = e.Message;
             }
         }
     }

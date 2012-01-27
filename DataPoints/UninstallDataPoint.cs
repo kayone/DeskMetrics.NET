@@ -1,6 +1,6 @@
 namespace DeskMetrics.DataPoints
 {
-    public class UninstallDataPoint : BaseDataPoint
+    internal class UninstallDataPoint : BaseDataPoint
     {
         public override string JsonType
         {

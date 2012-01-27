@@ -1,19 +1,11 @@
-using DeskMetrics.OperatingSystem;
-using DeskMetrics.OperatingSystem.Hardware;
 using Newtonsoft.Json;
 
 namespace DeskMetrics.DataPoints
 {
-    public class StartAppDataPoint : BaseDataPoint
+    internal class StartAppDataPoint : BaseDataPoint
     {
-        private readonly IOperatingSystem _osInfo;
-        private readonly IHardware _hardwareInfo;
+        private static readonly EnviromentInformation EnviromentInformation = new EnviromentInformation();
 
-        public StartAppDataPoint()
-        {
-            _osInfo = OperatingSystemFactory.GetOperatingSystem();
-            _hardwareInfo = _osInfo.Hardware;
-        }
 
         public override string JsonType
         {
@@ -21,54 +13,54 @@ namespace DeskMetrics.DataPoints
         }
 
         [JsonProperty("osv")]
-        public string OsVersion { get { return _osInfo.Version; } }
+        public string OsVersion { get { return EnviromentInformation.OsVersion; } }
 
         [JsonProperty("ossp")]
-        public string OsServicePack { get { return _osInfo.ServicePack; } }
+        public string OsServicePack { get { return EnviromentInformation.OsServicePack; } }
 
         [JsonProperty("osar")]
-        public int OsArchitecture { get { return _osInfo.Architecture; } }
+        public int OsArchitecture { get { return EnviromentInformation.OsArchitecture; } }
 
         [JsonProperty("osnet")]
-        public string FrameworkVersion { get { return _osInfo.FrameworkVersion; } }
+        public string FrameworkVersion { get { return EnviromentInformation.FrameworkVersion; } }
 
         [JsonProperty("osnsp")]
-        public string FrameworkSP { get { return _osInfo.ServicePack; } }
+        public string FrameworkSP { get { return EnviromentInformation.FrameworkServicePack; } }
 
         [JsonProperty("oslng")]
-        public int OsLanguage { get { return _osInfo.Lcid; } }
+        public int OsLanguage { get { return EnviromentInformation.Language; } }
 
         [JsonProperty("osscn")]
-        public string ScreenResolution { get { return _hardwareInfo.ScreenResolution; } }
+        public string ScreenResolution { get { return EnviromentInformation.ScreenResolution; } }
 
         [JsonProperty("cnm")]
-        public string ProcessorName { get { return _hardwareInfo.ProcessorName; } }
+        public string ProcessorName { get { return EnviromentInformation.ProcessorName; } }
 
         [JsonProperty("car")]
-        public int ProcessorArchicteture { get { return _hardwareInfo.ProcessorArchicteture; } }
+        public int ProcessorArchicteture { get { return EnviromentInformation.ProcessorArchicteture; } }
 
         [JsonProperty("cbr")]
-        public string ProcessorBrand { get { return _hardwareInfo.ProcessorBrand; } }
+        public string ProcessorBrand { get { return EnviromentInformation.ProcessorBrand; } }
 
         [JsonProperty("cfr")]
-        public double ProcessorFrequency { get { return _hardwareInfo.ProcessorFrequency; } }
+        public double ProcessorFrequency { get { return EnviromentInformation.ProcessorFrequency; } }
 
         [JsonProperty("ccr")]
-        public double ProcessorCores { get { return _hardwareInfo.ProcessorCores; } }
+        public double ProcessorCores { get { return EnviromentInformation.ProcessorCores; } }
 
         [JsonProperty("osjv")]
-        public string JavaVersion { get { return _osInfo.JavaVersion; } }
+        public string JavaVersion { get { return EnviromentInformation.JavaVersion; } }
 
         [JsonProperty("mtt")]
-        public double MemoryTotal { get { return _hardwareInfo.MemoryTotal; } }
+        public double MemoryTotal { get { return EnviromentInformation.MemoryTotal; } }
 
         [JsonProperty("mfr")]
-        public double MemoryFree { get { return _hardwareInfo.MemoryFree; } }
+        public double MemoryFree { get { return EnviromentInformation.MemoryFree; } }
 
-        [JsonProperty("dtt")]
-        public string DiskTotal { get { return null; } }
+        //[JsonProperty("dtt")]
+        //public string DiskTotal { get { return null; } }
 
-        [JsonProperty("dfr")]
-        public string DiskFree { get { return null; } }
+        //[JsonProperty("dfr")]
+        //public string DiskFree { get { return null; } }
     }
 }

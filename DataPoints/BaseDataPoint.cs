@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace DeskMetrics.DataPoints
 {
-    public abstract class BaseDataPoint
+    internal abstract class BaseDataPoint
     {
         [JsonProperty("tp")]
         public abstract string JsonType { get; }

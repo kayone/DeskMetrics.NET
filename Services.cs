@@ -5,12 +5,12 @@ using System.Net;
 
 namespace DeskMetrics
 {
-    public class Services
+    internal class Services
     {
         public const string UserAgent = "DeskMetricsNET";
         public const string DefaultServer = ".api.deskmetrics.com/sendData";
 
-        public const int DefaultPort = 80;
+        public const int DefaultPort = 443;
         public const int Timeout = 25000; // 20 seconds
 
 
@@ -104,7 +104,6 @@ namespace DeskMetrics
 
                 var response = (HttpWebResponse)request.GetResponse();
                 var streamreader = new StreamReader(response.GetResponseStream());
-                Console.WriteLine(streamreader.ReadToEnd());
                 streamreader.Close();
             }
         }

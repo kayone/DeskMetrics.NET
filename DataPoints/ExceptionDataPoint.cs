@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace DeskMetrics.DataPoints
 {
-    public class ExceptionDataPoint : BaseDataPoint
+    internal class ExceptionDataPoint : BaseDataPoint
     {
 
 

@@ -34,6 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\DeskMetrics.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -51,18 +52,13 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IDeskMetricsClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services.cs" />
     <Compile Include="DeskMetricsClient.cs" />
-    <Compile Include="OperatingSystem\MacOSXOperatingSystem.cs" />
-    <Compile Include="OperatingSystem\OperatingSystemFactory.cs" />
-    <Compile Include="OperatingSystem\UnixOperatingSystem.cs" />
-    <Compile Include="OperatingSystem\WindowsOperatingSystem.cs" />
     <Compile Include="DataPoints\BaseDataPoint.cs" />
     <Compile Include="DataPoints\InstallDataPoint.cs" />
     <Compile Include="DataPoints\UninstallDataPoint.cs" />
@@ -74,11 +70,7 @@
     <Compile Include="DataPoints\ExceptionDataPoint.cs" />
     <Compile Include="DataPoints\StartAppDataPoint.cs" />
     <Compile Include="DataPoints\EventPeriodDataPoint.cs" />
-    <Compile Include="OperatingSystem\IOperatingSystem.cs" />
-    <Compile Include="OperatingSystem\Hardware\IHardware.cs" />
-    <Compile Include="OperatingSystem\Hardware\WindowsHardware.cs" />
-    <Compile Include="OperatingSystem\Hardware\UnixHardware.cs" />
-    <Compile Include="OperatingSystem\Hardware\MacOSXHadware.cs" />
+    <Compile Include="EnviromentInformation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

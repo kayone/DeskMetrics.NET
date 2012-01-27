@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace DeskMetrics.DataPoints
 {
-    public class CustomDataDataPoint : BaseDataPoint
+    internal class CustomDataDataPoint : BaseDataPoint
     {
         public override string JsonType
         {
