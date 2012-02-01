@@ -46,8 +46,8 @@ namespace DeskMetrics.Test
 
         [Test]
         public void MemoryTotal()
-        {                                           
-            _hardware.MemoryTotal.Should().BeInRange(1000000000, 12000000000 ); //1gb-12gb
+        {
+            _hardware.MemoryTotal.Should().BeInRange(1000000000, 12000000000); //1gb-12gb
         }
 
         [Test]

@@ -4,7 +4,12 @@ namespace DeskMetrics.DataPoints
 {
     internal class StartAppDataPoint : BaseDataPoint
     {
-        private static readonly EnviromentInformation EnviromentInformation = new EnviromentInformation();
+        private readonly EnviromentInformation _enviromentInformation;
+
+        public StartAppDataPoint()
+        {
+            _enviromentInformation = new EnviromentInformation();
+        }
 
 
         public override string JsonType
@@ -13,49 +18,49 @@ namespace DeskMetrics.DataPoints
         }
 
         [JsonProperty("osv")]
-        public string OsVersion { get { return EnviromentInformation.OsVersion; } }
+        public string OsVersion { get { return _enviromentInformation.OsVersion; } }
 
         [JsonProperty("ossp")]
-        public string OsServicePack { get { return EnviromentInformation.OsServicePack; } }
+        public string OsServicePack { get { return _enviromentInformation.OsServicePack; } }
 
         [JsonProperty("osar")]
-        public int OsArchitecture { get { return EnviromentInformation.OsArchitecture; } }
+        public int OsArchitecture { get { return _enviromentInformation.OsArchitecture; } }
 
         [JsonProperty("osnet")]
-        public string FrameworkVersion { get { return EnviromentInformation.FrameworkVersion; } }
+        public string FrameworkVersion { get { return _enviromentInformation.FrameworkVersion; } }
 
         [JsonProperty("osnsp")]
-        public string FrameworkSP { get { return EnviromentInformation.FrameworkServicePack; } }
+        public string FrameworkSP { get { return _enviromentInformation.FrameworkServicePack; } }
 
         [JsonProperty("oslng")]
-        public int OsLanguage { get { return EnviromentInformation.Language; } }
+        public int OsLanguage { get { return _enviromentInformation.Language; } }
 
         [JsonProperty("osscn")]
-        public string ScreenResolution { get { return EnviromentInformation.ScreenResolution; } }
+        public string ScreenResolution { get { return _enviromentInformation.ScreenResolution; } }
 
         [JsonProperty("cnm")]
-        public string ProcessorName { get { return EnviromentInformation.ProcessorName; } }
+        public string ProcessorName { get { return _enviromentInformation.ProcessorName; } }
 
         [JsonProperty("car")]
-        public int ProcessorArchicteture { get { return EnviromentInformation.ProcessorArchicteture; } }
+        public int ProcessorArchicteture { get { return _enviromentInformation.ProcessorArchicteture; } }
 
         [JsonProperty("cbr")]
-        public string ProcessorBrand { get { return EnviromentInformation.ProcessorBrand; } }
+        public string ProcessorBrand { get { return _enviromentInformation.ProcessorBrand; } }
 
         [JsonProperty("cfr")]
-        public double ProcessorFrequency { get { return EnviromentInformation.ProcessorFrequency; } }
+        public double ProcessorFrequency { get { return _enviromentInformation.ProcessorFrequency; } }
 
         [JsonProperty("ccr")]
-        public double ProcessorCores { get { return EnviromentInformation.ProcessorCores; } }
+        public double ProcessorCores { get { return _enviromentInformation.ProcessorCores; } }
 
         [JsonProperty("osjv")]
-        public string JavaVersion { get { return EnviromentInformation.JavaVersion; } }
+        public string JavaVersion { get { return _enviromentInformation.JavaVersion; } }
 
         [JsonProperty("mtt")]
-        public double MemoryTotal { get { return EnviromentInformation.MemoryTotal; } }
+        public double MemoryTotal { get { return _enviromentInformation.MemoryTotal; } }
 
         [JsonProperty("mfr")]
-        public double MemoryFree { get { return EnviromentInformation.MemoryFree; } }
+        public double MemoryFree { get { return _enviromentInformation.MemoryFree; } }
 
         //[JsonProperty("dtt")]
         //public string DiskTotal { get { return null; } }

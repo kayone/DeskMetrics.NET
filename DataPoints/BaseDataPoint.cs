@@ -5,6 +5,13 @@ namespace DeskMetrics.DataPoints
 {
     internal abstract class BaseDataPoint
     {
+        protected BaseDataPoint()
+        {
+            var origin = new DateTime(1970, 1, 1);
+            var diff = DateTime.Now.AddHours(-8) - origin;
+            TimeStamp = Convert.ToInt32(diff.TotalSeconds);
+        }
+
         [JsonProperty("tp")]
         public abstract string JsonType { get; }
 
@@ -18,19 +25,10 @@ namespace DeskMetrics.DataPoints
         public string SessionId { get; set; }
 
         [JsonProperty("ts")]
-        public int TimeStamp { get { return GetTimeStamp(); } }
+        public int TimeStamp { get; private set; }
 
         [JsonProperty("fl")]
         public int Flow { get; set; }
-
-        private static int GetTimeStamp()
-        {
-            double timeStamp = 0;
-            var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            var diff = DateTime.UtcNow - origin;
-            timeStamp = Math.Floor(diff.TotalSeconds);
-            return Convert.ToInt32(timeStamp);
-        }
     }
 }
 

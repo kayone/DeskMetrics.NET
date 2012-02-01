@@ -8,77 +8,104 @@ namespace DeskMetrics
 {
     internal class EnviromentInformation
     {
+        readonly PropertyDataCollection _win32Processor = new ManagementObjectSearcher("select * from Win32_Processor").Get().OfType<ManagementObject>().First().Properties;
+        readonly PropertyDataCollection _win32OperatingSystem = new ManagementObjectSearcher("select * from Win32_OperatingSystem").Get().OfType<ManagementObject>().First().Properties;
 
-        private static readonly PropertyDataCollection Win32Processor;
-        private static readonly PropertyDataCollection Win32OperatingSystem;
+        public EnviromentInformation()
+        {
+            GetFrameworkVersion();
+        }
 
-        public string ProcessorName { get; private set; }
+        public string ProcessorName
+        {
+            get
+            {
+                return _win32Processor["Name"].Value.ToString();
+            }
+        }
 
-        public int ProcessorArchicteture { get; private set; }
+        public int ProcessorArchicteture
+        {
+            get
+            {
+                return Convert.ToInt32(_win32Processor["AddressWidth"].Value);
+            }
+        }
 
-        public int ProcessorCores { get; private set; }
+        public int ProcessorCores
+        {
+            get
+            {
+                return Convert.ToInt32(_win32Processor["NumberOfCores"].Value);
+            }
+        }
 
-        public string ProcessorBrand { get; private set; }
+        public string ProcessorBrand
+        {
+            get { return CleanUpBrand(_win32Processor["Manufacturer"].Value.ToString()); }
+        }
 
-        public double ProcessorFrequency { get; private set; }
+        public double ProcessorFrequency
+        {
+            get { return Convert.ToInt32(_win32Processor["MaxClockSpeed"].Value); }
+        }
 
-        public double MemoryTotal { get; private set; }
+        public double MemoryTotal
+        {
+            get
+            {
+                return Convert.ToDouble(_win32OperatingSystem["TotalVisibleMemorySize"].Value) * 1024;
+            }
+        }
 
-        public double MemoryFree { get; private set; }
+        public double MemoryFree
+        {
+            get { return Convert.ToDouble(_win32OperatingSystem["FreePhysicalMemory"].Value) * 1024; }
+        }
 
-        public string ScreenResolution { get; private set; }
+        public string ScreenResolution
+        {
+            get { return string.Empty; }
+        }
 
 
         public string FrameworkVersion { get; private set; }
 
         public string FrameworkServicePack { get; private set; }
 
-        public string OsVersion { get; private set; }
+        public string OsVersion
+        {
+            get { return RemoveEdition(_win32OperatingSystem["Caption"].Value.ToString()); }
+        }
 
-        public string OsServicePack { get; private set; }
+        public string OsServicePack
+        {
+            get
+            {
+                return _win32OperatingSystem["CSDVersion"].Value.ToString();
+            }
+        }
 
-        public int OsArchitecture { get; private set; }
+        public int OsArchitecture
+        {
+            get
+            {
+                if (Environment.Is64BitOperatingSystem)
+                    return 64;
+
+                return 32;
+            }
+        }
 
         public string JavaVersion { get; private set; }
 
-        public int Language { get; private set; }
-
-        static EnviromentInformation()
+        public int Language
         {
-            Win32Processor = new ManagementObjectSearcher("select * from Win32_Processor").Get().OfType<ManagementObject>().First().Properties;
-            Win32OperatingSystem = new ManagementObjectSearcher("select * from Win32_OperatingSystem").Get().OfType<ManagementObject>().First().Properties;
+            get { return Thread.CurrentThread.CurrentCulture.LCID; }
         }
 
 
-        public EnviromentInformation()
-        {
-            ProcessorName = Win32Processor["Name"].Value.ToString();
-            ProcessorArchicteture = Convert.ToInt32(Win32Processor["AddressWidth"].Value);
-            ProcessorCores = Convert.ToInt32(Win32Processor["NumberOfCores"].Value);
-            ProcessorBrand = CleanUpBrand(Win32Processor["Manufacturer"].Value.ToString());
-            ProcessorFrequency = Convert.ToInt32(Win32Processor["MaxClockSpeed"].Value);
 
-            MemoryTotal = Convert.ToDouble(Win32OperatingSystem["TotalVisibleMemorySize"].Value) * 1024;
-            MemoryFree = Convert.ToDouble(Win32OperatingSystem["FreePhysicalMemory"].Value) * 1024;
-
-            OsVersion = RemoveEdition(Win32OperatingSystem["Caption"].Value.ToString());
-            OsServicePack = Win32OperatingSystem["CSDVersion"].Value.ToString();
-
-            Language = Thread.CurrentThread.CurrentCulture.LCID;
-
-            if (Win32OperatingSystem["OSArchitecture"].Value.ToString().Contains("32"))
-            {
-                OsArchitecture = 32;
-            }
-            else
-            {
-                OsArchitecture = 64;
-            }
-
-            GetFrameworkVersion();
-
-            ScreenResolution = string.Empty;
-        }
 
         private string CleanUpBrand(string brand)
         {
@@ -112,7 +139,7 @@ namespace DeskMetrics
                 var key = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\NET Framework Setup\NDP");
                 if (key != null)
                 {
-                    if ((key.OpenSubKey("v4")) != null)
+                    if (key.OpenSubKey("v4") != null)
                     {
                         FrameworkVersion = "4.0";
                         FrameworkServicePack = "0";
